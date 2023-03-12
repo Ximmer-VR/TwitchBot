@@ -1,0 +1,94 @@
+{
+    "channel": {
+        "update": [],
+        "follow": ["moderator:read:followers"],
+        "subscribe": ["channel:read:subscriptions"],
+        "subscription.end": ["channel:read:subscriptions"],
+        "subscription.gift": ["channel:read:subscriptions"],
+        "subscription.message": ["channel:read:subscriptions"],
+        "cheer": ["bits:read"],
+        "raid": [],
+        "ban": ["channel:moderate"],
+        "unban": ["channel:moderate"],
+        "moderator": {
+            "add": ["moderation:read"],
+            "remove": ["moderation:read"]
+        },
+        "channel_points_custom_reward": {
+            "add": ["channel:read:redemptions", "channel:manage:redemptions"],
+            "update": ["channel:read:redemptions", "channel:manage:redemptions"],
+            "channel_points_custom_reward.remove": ["channel:read:redemptions", "channel:manage:redemptions"]
+        },
+        "channel_points_custom_reward_redemption": {
+            "add": ["channel:read:redemptions", "channel:manage:redemptions"],
+            "update": ["channel:read:redemptions", "channel:manage:redemptions"]
+        },
+
+        "poll": {
+            "begin": ["channel:read:polls", "channel:manage:polls"],
+            "progress": ["channel:read:polls", "channel:manage:polls"],
+            "end": ["channel:read:polls", "channel:manage:polls"]
+        },
+
+        "prediction": {
+            "begin": ["channel:read:predictions", "channel:manage:predictions"],
+            "progress": ["channel:read:predictions", "channel:manage:predictions"],
+            "lock": ["channel:read:predictions", "channel:manage:predictions"],
+            "end": ["channel:read:predictions", "channel:manage:predictions"]
+        },
+
+        "charity_campaign": {
+            "donate": ["channel:read:charity"],
+            "start": ["channel:read:charity"],
+            "progress": ["channel:read:charity"],
+            "stop": ["channel:read:charity"]
+        },
+
+        "goal": {
+            "begin": ["channel:read:goals"],
+            "progress": ["channel:read:goals"],
+            "end": ["channel:read:goals"]
+        },
+
+        "hype_train": {
+            "begin": ["channel:read:hype_train"],
+            "progress": ["channel:read:hype_train"],
+            "end": ["channel:read:hype_train"]
+        },
+
+        "shield_mode": {
+            "begin": ["moderator:read:shield_mode", "moderator:manage:shield_mode"],
+            "end": ["moderator:read:shield_mode", "moderator:manage:shield_mode"]
+        },
+
+        "shoutout": {
+            "create": ["moderator:read:shoutouts", "moderator:manage:shoutouts"],
+            "receive": ["moderator:read:shoutouts", "moderator:manage:shoutouts"]
+        }
+    },
+
+    "drop": {
+        "entitlement": {
+            "grant": ["App access token required. The client ID associated with the access token must be owned by a user who is part of the specified organization"]
+        }
+    },
+
+    "extension": {
+        "bits_transaction": {
+            "create": ["The OAuth token client ID must match the Extension client ID"]
+        }
+    },
+
+    "stream": {
+        "online": [],
+        "offline": []
+    },
+
+    "user": {
+        "authorization": {
+            "grant": ["Provided client_id must match the client id in the application access token"],
+            "revoke": ["Provided client_id must match the client id in the application access token"]
+        },
+        "update": []
+    }
+}
