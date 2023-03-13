@@ -10,7 +10,6 @@
 > Todo: explain .env file setup and how to get bot and stream codes
 
 ```ini
-BOT_OWNER=CoolGuy
 STREAM_USER=coolguy
 
 BOT_USERNAME=CoolBot
