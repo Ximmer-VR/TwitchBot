@@ -11,7 +11,7 @@ import re
 import time
 from logging.handlers import TimedRotatingFileHandler
 
-from rich import print
+from rich import console, print
 
 os.makedirs('./logs', exist_ok=True)
 
@@ -57,6 +57,8 @@ class Logger(object):
             self._name_color = name_color
 
         self._log = logging.getLogger(str(name))
+
+        self._console = console.Console()
 
     def _escape(self, msg):
 
@@ -105,14 +107,15 @@ class Logger(object):
     # Logging Interface
     #
 
-    msg_format = '[{bg}]{when} - [{name_color}]{name:24s}[/] [{color}] {level:11s}[/] {msg}'
+    msg_format = '[{bg}]{when} - [{name_color}]{name:24s}[/] [{color}] {level:11s}[/] {msg}{padding}'
 
 
 
     def info(self, msg):
         msg = self._obfuscate(msg)
         self._log.info(self._clean(msg))
-        print(self.msg_format.format(color='#B5CE89', level='[INFO]', when=self._now(), name_color=self._name_color, name=self._name, msg=self._escape(msg), bg=self._bg()))
+        padding = ' ' * (self._console.width - len(msg))
+        print(self.msg_format.format(color='#B5CE89', level='[INFO]', when=self._now(), name_color=self._name_color, name=self._name, msg=self._escape(msg), bg=self._bg(), padding=padding))
 
     def debug(self, msg):
         msg = self._obfuscate(msg)
@@ -143,19 +146,22 @@ class Logger(object):
                 'time': time.time(),
                 'count': 1
             }
-
-        print(self.msg_format.format(color='#358CD5', level='[DEBUG]', when=self._now(), name_color=self._name_color, name=self._name, msg=self._escape(msg), bg=self._bg()))
+        padding = ' ' * (self._console.width - len(msg))
+        print(self.msg_format.format(color='#358CD5', level='[DEBUG]', when=self._now(), name_color=self._name_color, name=self._name, msg=self._escape(msg), bg=self._bg(), padding=padding))
 
     def warning(self, msg):
         msg = self._obfuscate(msg)
         self._log.warning(self._clean(msg))
-        print(self.msg_format.format(color='#FFA000', level='[WARNING]', when=self._now(), name_color=self._name_color, name=self._name, msg=self._escape(msg), bg=self._bg()))
+        padding = ' ' * (self._console.width - len(msg))
+        print(self.msg_format.format(color='#FFA000', level='[WARNING]', when=self._now(), name_color=self._name_color, name=self._name, msg=self._escape(msg), bg=self._bg(), padding=padding))
 
     def error(self, msg):
         msg = self._obfuscate(msg)
         self._log.error(self._clean(msg))
-        print(self.msg_format.format(color='#FF0000', level='[ERROR]', when=self._now(), name_color=self._name_color, name=self._name, msg=self._escape(msg), bg=self._bg()))
+        padding = ' ' * (self._console.width - len(msg))
+        print(self.msg_format.format(color='#FF0000', level='[ERROR]', when=self._now(), name_color=self._name_color, name=self._name, msg=self._escape(msg), bg=self._bg(), padding=padding))
 
     def exception(self, ex):
         self._log.exception(ex)
-        print(self.msg_format.format(color='#FF0000', level='[EXCEPTION]', when=self._now(), name_color=self._name_color, name=self._name, msg=ex, bg=self._bg()))
+        padding = ' ' * (self._console.width - len(msg))
+        print(self.msg_format.format(color='#FF0000', level='[EXCEPTION]', when=self._now(), name_color=self._name_color, name=self._name, msg=ex, bg=self._bg(), padding=padding))
