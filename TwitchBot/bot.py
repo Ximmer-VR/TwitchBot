@@ -21,16 +21,15 @@ import asyncio
 import json
 import sqlite3
 
-import requests
-import websockets
-import websockets.exceptions
-from dotenv import dotenv_values
-
 import auth
 import gears
 import irc
 import logger
-from timer import Timer
+import requests
+import timer
+import websockets
+import websockets.exceptions
+from dotenv import dotenv_values
 
 
 class TwitchBot(object):
@@ -63,7 +62,6 @@ class TwitchBot(object):
 
         self.setup_db()
 
-
         # Live State
         self._is_live = None
 
@@ -71,7 +69,9 @@ class TwitchBot(object):
         self._cached_login_to_id = {}
         self._cached_id_to_login = {}
         self._unknown_users = []
-        self._user_update_timer = Timer(1)
+
+        #TODO: Convert to task
+        self._user_update_timer = timer.Timer(1)
 
         # WebSocket
         self._socket = None
@@ -209,7 +209,7 @@ class TwitchBot(object):
         try:
             cursor = self.db_conn.cursor()
 
-            with open('tables.sql') as fp:
+            with open(self.config['DB_SCHEMA']) as fp:
                 text = fp.read()
                 cursor.executescript(text)
 
