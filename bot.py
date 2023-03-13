@@ -185,8 +185,18 @@ class TwitchBot(object):
     async def start(self):
         await self.load_gears()
         await self._irc.connect('wss://irc-ws.chat.twitch.tv:443')
-        asyncio.create_task(self.eventsub_loop(), name='EventSub')
-        asyncio.create_task(self.timer_loop(), name='Timer')
+        self.create_task(self.eventsub_loop(), name='EventSub')
+        self.create_task(self.timer_loop(), name='Timer')
+
+    def create_task(self, task: asyncio.coroutine, name=None):
+        asyncio.create_task(self._exception_wrapper(task), name=name)
+
+    async def _exception_wrapper(self, functor: asyncio.coroutine):
+        try:
+            await functor
+        except Exception as ex:
+            self._log.exception(ex)
+
 
     def api_request_get(self, url, token):
 
@@ -334,7 +344,7 @@ class TwitchBot(object):
 
     async def on_join(self, who):
         for gear in self._gears:
-            asyncio.create_task(gear.on_join(who))
+            self.create_task(gear.on_join(who))
 
     def is_live(self):
 
@@ -478,7 +488,7 @@ class TwitchBot(object):
             await asyncio.sleep(1)
 
             for gear in self._gears:
-                asyncio.create_task(gear.on_update())
+                self.create_task(gear.on_update())
 
             # process user update
             if self._user_update_timer.is_triggered():
@@ -590,7 +600,7 @@ class TwitchBot(object):
 
             # pass the redeem to the gears
             for gear in self._gears:
-                asyncio.create_task(gear.on_redeem(reward_username, reward_title))
+                self.create_task(gear.on_redeem(reward_username, reward_title))
         elif subscription_type == 'channel.cheer':
             anon = self.get_val(payload, 'event.is_anonymous')
             who = 'Anonymous'
@@ -600,39 +610,39 @@ class TwitchBot(object):
             message = self.get_val(payload, 'event.message')
 
             for gear in self._gears:
-                asyncio.create_task(gear.on_cheer(who, bits, message))
+                self.create_task(gear.on_cheer(who, bits, message))
         elif subscription_type == 'channel.follow':
             follow_username = self.get_val(payload, 'event.user_name')
 
             for gear in self._gears:
-                asyncio.create_task(gear.on_follow(follow_username))
+                self.create_task(gear.on_follow(follow_username))
         elif subscription_type == 'channel.subscribe':
             subscribe_username = self.get_val(payload, 'event.user_name')
 
             for gear in self._gears:
-                asyncio.create_task(gear.on_subscribe(subscribe_username, None, None))
+                self.create_task(gear.on_subscribe(subscribe_username, None, None))
         elif subscription_type == 'channel.subscription.message':
             subscribe_username = self.get_val(payload, 'event.user_name')
             message = self.get_val(payload, 'event.message.text')
             emotes = self.get_val(payload, 'event.message.emotes')
 
             for gear in self._gears:
-                asyncio.create_task(gear.on_subscribe(subscribe_username, message, emotes))
+                self.create_task(gear.on_subscribe(subscribe_username, message, emotes))
         elif subscription_type == 'stream.online':
             self._log.info('stream state has changed from {} to online'.format('unknown' if self._is_live is None else 'offline'))
             self._is_live = True
             for gear in self._gears:
-                asyncio.create_task(gear.on_stream_live(True))
+                self.create_task(gear.on_stream_live(True))
         elif subscription_type == 'stream.offline':
             self._log.info('stream state has changed from {} to offline'.format('unknown' if self._is_live is None else 'online'))
             self._is_live = False
             for gear in self._gears:
-                asyncio.create_task(gear.on_stream_live(False))
+                self.create_task(gear.on_stream_live(False))
         elif subscription_type == 'channel.raid':
             raider_username = self.get_val(payload, 'event.from_broadcaster_user_name')
             raid_size = self.get_val(payload, 'event.viewers')
             for gear in self._gears:
-                asyncio.create_task(gear.on_raid(raider_username, raid_size))
+                self.create_task(gear.on_raid(raider_username, raid_size))
         else:
             self._log.warning('subscription notification unhandled: {}'.format(subscription_type))
 
@@ -656,11 +666,11 @@ class TwitchBot(object):
                     message_type = data['metadata']['message_type']
 
                     if message_type == 'session_welcome':
-                        asyncio.create_task(self._on_session_welcome(data['metadata'], data['payload']))
+                        self.create_task(self._on_session_welcome(data['metadata'], data['payload']))
                     elif message_type == 'session_keepalive':
                         pass
                     elif message_type == 'notification':
-                        asyncio.create_task(self._on_notification(data['metadata'], data['payload']))
+                        self.create_task(self._on_notification(data['metadata'], data['payload']))
                     elif message_type == 'session_reconnect':
                         self._log.info('session_reconnect received. websocket reconnecting...')
 
