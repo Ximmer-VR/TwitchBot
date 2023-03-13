@@ -136,7 +136,7 @@ def _load(path, module = ''):
 MODULE_LIST = {}
 GEAR_LIST = {}
 
-def load(path = 'gears'):
+def load(path = 'TwitchBot/gears'):
 
     global MODULE_LIST
     global GEAR_LIST

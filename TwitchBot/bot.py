@@ -610,15 +610,3 @@ class TwitchBot(object):
 
         for gear in self._gears:
             await gear.start(self)
-
-async def main():
-    bot = TwitchBot()
-
-    await bot.start()
-
-    while True:
-        await asyncio.sleep(1)
-
-
-if __name__ == '__main__':
-    asyncio.run(main())
