@@ -161,9 +161,6 @@ class TwitchBot(object):
         # Live State
         self._is_live = None
 
-        # Points
-        self._points_timer = Timer(60, 10)
-
         # Active Users
         self._cached_login_to_id = {}
         self._cached_id_to_login = {}
@@ -339,7 +336,7 @@ class TwitchBot(object):
         for gear in self._gears:
             asyncio.create_task(gear.on_join(who))
 
-    async def is_live(self):
+    def is_live(self):
 
         if self._is_live is not None:
             return self._is_live
@@ -415,31 +412,8 @@ class TwitchBot(object):
 
         return None
 
-    # TODO: Move to a gear
-    def add_points_all(self):
-
-        message = 'added 1 point for: '
-
-        users = self._irc.get_users()
-
-        for user in users:
-            message += user + ', '
-            user_id = self.get_userid_from_login(user)
-
-            if user_id is not None:
-                self.add_points(user_id, 1)
-
-        self._log.info(message)
-
-    # TODO: Move to a gear
-    def add_points(self, user_id, points):
-        cursor = self.db_conn.cursor()
-
-        try:
-            cursor.execute('INSERT INTO points(user_id) VALUES(?) ON CONFLICT(user_id) DO UPDATE SET points=points+?', (user_id,points))
-            self.db_conn.commit()
-        except sqlite3.Error as ex:
-            self._log.exception(ex)
+    def get_chat_users(self):
+        return self._irc.get_users()
 
     def update_users(self):
         if len(self._unknown_users) == 0:
@@ -509,12 +483,6 @@ class TwitchBot(object):
             # process user update
             if self._user_update_timer.is_triggered():
                 self.update_users()
-
-            # TODO: move to a gear
-            # hand out points to users if stream is live
-            if self._points_timer.is_triggered():
-                if await self.is_live():
-                    self.add_points_all()
 
     async def _subscribe(self, event_type, token):
 

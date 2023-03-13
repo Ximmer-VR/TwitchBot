@@ -54,15 +54,24 @@ class Gear(metaclass=abc.ABCMeta):
     async def send_message(self, message):
         await self._bot.send_message(message)
 
-    def ban(self, who, reason):
+    def ban(self, who, reason) -> None:
         self._bot.api_ban(who, reason)
 
-    def timeout(self, who, reason, duration):
+    def timeout(self, who, reason, duration) -> None:
         self._bot.api_timeout(who, reason, duration)
 
     # colors: blue, green, orange, purple, primary
-    def announce(self, message, color = None):
+    def announce(self, message, color = None) -> None:
         self._bot.api_announce(message, color)
+
+    def is_live(self) -> bool:
+        return self._bot.is_live()
+
+    def get_chat_users(self) -> list:
+        return self._bot.get_chat_users()
+
+    def login_to_userid(self, login) -> int:
+        return self._bot.get_userid_from_login(login)
 
     #
     # interface
