@@ -3,11 +3,12 @@
 __author__ = 'Ximmer'
 __copyright__ = 'Copyright 2023, Ximmer'
 
-import re
 import datetime
 import logging
 import logging.handlers
 import os
+import re
+import time
 from logging.handlers import TimedRotatingFileHandler
 
 from rich import print
@@ -40,6 +41,8 @@ _default_colors = [
 _next_color = 0
 
 _bg = True
+
+_log_spam = {}
 
 class Logger(object):
     def __init__(self, name, name_color=None) -> None:
@@ -114,6 +117,33 @@ class Logger(object):
     def debug(self, msg):
         msg = self._obfuscate(msg)
         self._log.debug(self._clean(msg))
+
+        if len(_log_spam) > 50:
+            cleaned = 0
+            for spam in list(_log_spam.keys()):
+                if time.time() - _log_spam[spam]['time'] > 60 * 10:
+                    del _log_spam[spam]
+                    cleaned += 1
+            self.debug('cleaned out {} log messages'.format(cleaned))
+
+        if msg in _log_spam:
+            msg_entry = _log_spam[msg]
+
+            msg_entry['time'] = time.time()
+
+            if msg_entry['count'] > 10:
+                return
+
+            msg_entry['count'] += 1
+            if msg_entry['count'] > 10:
+                self.warning('muting log message: {}'.format(msg))
+
+        else:
+            _log_spam[msg] = {
+                'time': time.time(),
+                'count': 1
+            }
+
         print(self.msg_format.format(color='#358CD5', level='[DEBUG]', when=self._now(), name_color=self._name_color, name=self._name, msg=self._escape(msg), bg=self._bg()))
 
     def warning(self, msg):
