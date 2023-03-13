@@ -18,3 +18,4 @@ venv.bak/
 
 logs/
 tokens.json
+*.db
