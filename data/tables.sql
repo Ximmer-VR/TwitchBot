@@ -1,3 +1,5 @@
+BEGIN TRANSACTION;
+
 CREATE TABLE IF NOT EXISTS banned_text (
     id INTEGER PRIMARY KEY,
     message TEXT
@@ -41,6 +43,15 @@ CREATE TABLE IF NOT EXISTS config (
 CREATE TABLE IF NOT EXISTS bots (
     id INTEGER PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
-    live_in INTEGER NOT NULL,
-    last_seen INTEGER NOT NULL
+    live_in INTEGER,
+    last_seen INTEGER,
+    whitelist INTEGER DEFAULT 0 NOT NULL
 );
+
+INSERT OR REPLACE INTO bots (username, whitelist) VALUES
+('streamlabs', 1),
+('streamelements', 1),
+('commanderroot', 1)
+;
+
+COMMIT;
