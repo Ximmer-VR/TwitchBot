@@ -48,10 +48,8 @@ CREATE TABLE IF NOT EXISTS bots (
     whitelist INTEGER DEFAULT 0 NOT NULL
 );
 
-INSERT OR REPLACE INTO bots (username, whitelist) VALUES
-('streamlabs', 1),
-('streamelements', 1),
-('commanderroot', 1)
-;
+INSERT INTO bots (username, whitelist) VALUES ('streamlabs', 1) ON CONFLICT(username) DO NOTHING;
+INSERT INTO bots (username, whitelist) VALUES ('streamelements', 1) ON CONFLICT(username) DO NOTHING;
+INSERT INTO bots (username, whitelist) VALUES ('commanderroot', 1) ON CONFLICT(username) DO NOTHING;
 
 COMMIT;
