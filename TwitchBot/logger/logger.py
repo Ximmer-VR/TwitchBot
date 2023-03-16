@@ -107,15 +107,13 @@ class Logger(object):
     # Logging Interface
     #
 
-    msg_format = '[{bg}]{when} - [{name_color}]{name:24s}[/] [{color}] {level:11s}[/] {msg}{padding}'
-
-
+    _msg_format = '[{bg}]{when} - [{name_color}]{name:24s}[/] [{color}] {level:11s}[/] {msg}{padding}'
 
     def info(self, msg):
         msg = self._obfuscate(msg)
         self._log.info(self._clean(msg))
         padding = ' ' * (self._console.width - len(msg))
-        print(self.msg_format.format(color='#B5CE89', level='[INFO]', when=self._now(), name_color=self._name_color, name=self._name, msg=self._escape(msg), bg=self._bg(), padding=padding))
+        print(self._msg_format.format(color='#B5CE89', level='[INFO]', when=self._now(), name_color=self._name_color, name=self._name, msg=self._escape(msg), bg=self._bg(), padding=padding))
 
     def debug(self, msg):
         msg = self._obfuscate(msg)
@@ -127,7 +125,7 @@ class Logger(object):
                 if time.time() - _log_spam[spam]['time'] > 60 * 10:
                     del _log_spam[spam]
                     cleaned += 1
-            self.debug('cleaned out {} log messages'.format(cleaned))
+            # self.debug('cleaned out {} log messages'.format(cleaned))
 
         if msg in _log_spam:
             msg_entry = _log_spam[msg]
@@ -147,21 +145,21 @@ class Logger(object):
                 'count': 1
             }
         padding = ' ' * (self._console.width - len(msg))
-        print(self.msg_format.format(color='#358CD5', level='[DEBUG]', when=self._now(), name_color=self._name_color, name=self._name, msg=self._escape(msg), bg=self._bg(), padding=padding))
+        print(self._msg_format.format(color='#358CD5', level='[DEBUG]', when=self._now(), name_color=self._name_color, name=self._name, msg=self._escape(msg), bg=self._bg(), padding=padding))
 
     def warning(self, msg):
         msg = self._obfuscate(msg)
         self._log.warning(self._clean(msg))
         padding = ' ' * (self._console.width - len(msg))
-        print(self.msg_format.format(color='#FFA000', level='[WARNING]', when=self._now(), name_color=self._name_color, name=self._name, msg=self._escape(msg), bg=self._bg(), padding=padding))
+        print(self._msg_format.format(color='#FFA000', level='[WARNING]', when=self._now(), name_color=self._name_color, name=self._name, msg=self._escape(msg), bg=self._bg(), padding=padding))
 
     def error(self, msg):
         msg = self._obfuscate(msg)
         self._log.error(self._clean(msg))
         padding = ' ' * (self._console.width - len(msg))
-        print(self.msg_format.format(color='#FF0000', level='[ERROR]', when=self._now(), name_color=self._name_color, name=self._name, msg=self._escape(msg), bg=self._bg(), padding=padding))
+        print(self._msg_format.format(color='#FF0000', level='[ERROR]', when=self._now(), name_color=self._name_color, name=self._name, msg=self._escape(msg), bg=self._bg(), padding=padding))
 
     def exception(self, ex):
         self._log.exception(ex)
-        padding = ' ' * (self._console.width - len(msg))
-        print(self.msg_format.format(color='#FF0000', level='[EXCEPTION]', when=self._now(), name_color=self._name_color, name=self._name, msg=ex, bg=self._bg(), padding=padding))
+        padding = ''
+        print(self._msg_format.format(color='#FF0000', level='[EXCEPTION]', when=self._now(), name_color=self._name_color, name=self._name, msg=ex, bg=self._bg(), padding=padding))
