@@ -87,7 +87,7 @@ class TwitchBot(object):
 
     async def start(self):
         await self.load_gears()
-        await self._irc.connect('wss://irc-ws.chat.twitch.tv:443')
+        await self._irc.connect(self.config['IRC_HOST'])
         self.create_task(self.eventsub_loop(), name='EventSub')
         self.create_task(self.timer_loop(), name='Timer')
 
