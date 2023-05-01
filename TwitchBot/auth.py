@@ -21,6 +21,7 @@ class Token(object):
         self._code = code
 
         self._name = name
+        self._token_code = None
         self._token = None
         self._refresh_token = None
         self._token_expires = None
@@ -35,14 +36,16 @@ class Token(object):
                     token = json.load(fp)
                     if self._name in token:
                         if 'token' in token[self._name]:
+                            self._token_code = token[self._name]['code']
                             self._token = token[self._name]['token']
                             self._refresh_token = token[self._name]['refresh_token']
                             self._token_expires = token[self._name]['token_expires']
+                            self._log.obfuscate(self._token_code)
                             self._log.obfuscate(self._token)
                             self._log.obfuscate(self._refresh_token)
 
         # check for expired token
-        if self._token_expires is None or time.time() > self._token_expires:
+        if self._token_expires is None or time.time() > self._token_expires or self._token_code != self._code:
 
             if self._refresh_token is not None:
                 self._log.info('refreshing token {}'.format(self._name))
@@ -74,6 +77,7 @@ class Token(object):
                     self._log.error('error getting user token')
                     self._log.error(response)
                 else:
+                    self._token_code = self._code
                     self._token = response['access_token']
                     self._refresh_token = response['refresh_token']
                     self._token_expires = time.time() + response['expires_in']
@@ -94,6 +98,7 @@ class Token(object):
                 token = {}
 
             token[self._name] = {
+                'code': self._code,
                 'token': self._token,
                 'refresh_token': self._refresh_token,
                 'token_expires': self._token_expires,
