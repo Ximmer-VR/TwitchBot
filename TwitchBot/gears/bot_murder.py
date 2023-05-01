@@ -82,6 +82,7 @@ class BotMurder(Gear):
             if row is not None and row['whitelist'] == 0:
                 self._log.info('banning known bot {}'.format(who))
                 self.ban(who, 'registered bot')
+                await self.send_message('Banning {}. Known bot seen in {} channels.'.format(who, row['live_in']))
         except sqlite3.Error as ex:
             self.log_exception(ex)
 
