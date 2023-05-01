@@ -23,6 +23,14 @@ class BotMurder(Gear):
         return 'BanBots'
 
     async def on_start(self) -> None:
+        asyncio.create_task(self.update_bots())
+
+    async def on_stream_live(self, live: bool) -> None:
+        if live:
+            asyncio.create_task(self.update_bots())
+
+    async def update_bots(self):
+
         try:
             cursor = self.db_cursor()
             cursor.execute("SELECT * FROM config WHERE key='bots_last_updated'")
@@ -30,12 +38,11 @@ class BotMurder(Gear):
 
             if row is None or time.time() > float(row['value']) + UPDATE_PERIOD_S:
                 self.log_info('bot list out of date')
-                asyncio.create_task(self.update_bots())
+            else:
+                return
 
         except sqlite3.Error as ex:
             self.log_exception(ex)
-
-    async def update_bots(self):
 
         self.log_debug('downloading bot list')
         response = requests.get('https://api.twitchinsights.net/v1/bots/all')
