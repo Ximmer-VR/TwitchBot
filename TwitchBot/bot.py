@@ -26,7 +26,6 @@ import gears
 import irc
 import logger
 import requests
-import timer
 import websockets
 import websockets.exceptions
 from dotenv import dotenv_values
@@ -69,9 +68,6 @@ class TwitchBot(object):
         self._cached_login_to_id = {}
         self._cached_id_to_login = {}
         self._unknown_users = []
-
-        #TODO: Convert to task
-        self._user_update_timer = timer.Timer(1)
 
         # WebSocket
         self._socket = None
@@ -369,8 +365,20 @@ class TwitchBot(object):
         cursor = self.db_conn.cursor()
         for user in response['data']:
             cursor.execute(
-                '''INSERT INTO users(id, broadcaster_type, description, display_name, login, offline_image_url, profile_image_url, type, view_count, created_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT(id) DO UPDATE SET broadcaster_type=excluded.broadcaster_type, description=excluded.description, display_name=excluded.display_name, login=excluded.login, offline_image_url=excluded.offline_image_url, profile_image_url=excluded.profile_image_url, type=excluded.type, view_count=excluded.view_count, created_at=excluded.created_at''',
+                '''
+                    INSERT INTO users(id, broadcaster_type, description, display_name, login, offline_image_url, profile_image_url, type, view_count, created_at)
+                    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ON CONFLICT(id) DO UPDATE
+                    SET broadcaster_type=excluded.broadcaster_type,
+                        description=excluded.description,
+                        display_name=excluded.display_name,
+                        login=excluded.login,
+                        offline_image_url=excluded.offline_image_url,
+                        profile_image_url=excluded.profile_image_url,
+                        type=excluded.type,
+                        view_count=excluded.view_count,
+                        created_at=excluded.created_at
+                ''',
                 (
                     user['id'],
                     user['broadcaster_type'],
@@ -397,8 +405,7 @@ class TwitchBot(object):
                 self.create_task(gear.on_update())
 
             # process user update
-            if self._user_update_timer.is_triggered():
-                self.update_users()
+            self.update_users()
 
     async def _subscribe(self, event_type, token):
 
