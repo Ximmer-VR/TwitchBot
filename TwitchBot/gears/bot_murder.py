@@ -53,11 +53,11 @@ class BotMurder(Gear):
             data = []
             for bot in json['bots']:
                 # 0=username, 1=live_in_channels, 2=last_seen(unix timestamp?)
-                data.append((bot[0], bot[1], bot[2], bot[1], bot[2], bot[0]))
+                data.append((bot[0], bot[1], bot[2]))
 
             try:
                 cursor = self.db_cursor()
-                cursor.executemany('INSERT INTO bots (username, live_in, last_seen) VALUES (?, ?, ?) ON CONFLICT(username) DO UPDATE SET live_in=?, last_seen=? WHERE username=?', data)
+                cursor.executemany('INSERT INTO bots (username, live_in, last_seen) VALUES (?, ?, ?) ON CONFLICT(username) DO UPDATE SET live_in=excluded.live_in, last_seen=excluded.last_seen', data)
                 self.db_commit()
             except sqlite3.Error as ex:
                 self.log_exception(ex)
