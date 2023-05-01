@@ -136,6 +136,12 @@ class Irc(object):
             if command == '353':
                 return
 
+            if command == 'NOTICE':
+                if data == 'Login authentication failed':
+                    self._log.warning('Failed to login to Twitci IRC')
+                    self._log.warning('https://id.twitch.tv/oauth2/authorize?response_type=token&redirect_uri=https://localhost&scope=chat%3Aread+chat%3Aedit&client_id=<CLIENT_ID>')
+                return
+
     async def _handle(self):
 
         async for self._socket in websockets.connect(self._server):
