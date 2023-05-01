@@ -50,8 +50,7 @@ CLIENT_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 BOT_CODE=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 STREAM_CODE=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-IRC_HOST=irc.chat.twitch.tv
-IRC_PORT=6667
+IRC_HOST=wss://irc-ws.chat.twitch.tv:443
 
 DB=data.db
 ```
