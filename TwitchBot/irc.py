@@ -68,6 +68,19 @@ class Irc(object):
 
     async def _irc_message(self, message):
 
+        ''' Unhandled Twitch Messages
+            CLEARCHAT	Receive	Your bot receives this message from the Twitch IRC server when all messages are removed from the chat room, or all messages for a specific user are removed from the chat room. Read more.
+            CLEARMSG	Receive	Your bot receives this message from the Twitch IRC server when a specific message is removed from the chat room. Read more.
+            GLOBALUSERSTATE	Receive	Your bot receives this message from the Twitch IRC server when a bot connects to the server. Read more.
+            HOSTTARGET	Receive	Your bot receives this message from the Twitch IRC server when a channel starts or stops host mode. Read more.
+            NOTICE	Receive	Your bot receives this message from the Twitch IRC server to indicate whether a command succeeded or failed. For example, a moderator tried to ban a user that was already banned. Read more.
+            RECONNECT	Receive	Your bot receives this message from the Twitch IRC server when the server needs to perform maintenance and is about to disconnect your bot. Read more.
+            ROOMSTATE	Receive	Your bot receives this message from the Twitch IRC server when a bot joins a channel or a moderator changes the chat room’s chat settings. Read more.
+            USERNOTICE	Receive	Your bot receives this message from the Twitch IRC server when events like user subscriptions occur. Read more.
+            USERSTATE	Receive	Your bot receives this message from the Twitch IRC server when a user joins a channel or the bot sends a PRIVMSG message. Read more.
+            WHISPER	Receive	Your bot receives this message from the Twitch IRC server when a user sends a WHISPER message. Read more.
+        '''
+
         self._log.debug('< {}'.format(message))
 
         # handle the oddball server messages
@@ -95,7 +108,9 @@ class Irc(object):
             if command == 'JOIN':
                 if self.on_join is not None:
                     nick, user, host = self._parse_ident(ident)
-                    self._users.append(nick)
+
+                    if nick not in self._users:
+                        self._users.append(nick)
                     asyncio.create_task(self.on_join(nick))
                     return
 
