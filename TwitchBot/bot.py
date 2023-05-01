@@ -11,10 +11,11 @@ __copyright__ = 'Copyright 2023, Ximmer'
 # https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=<CLIENT_ID>&redirect_uri=https://localhost&scope=chat:read chat:edit
 # code for irc
 
-# AUTH_CODE
+# BOT_CODE/STREAM_CODE
 # https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=<CLIENT_ID>&redirect_uri=https://localhost&scope=channel:moderate+channel:read:redemptions+channel:read:subscriptions+moderator:manage:banned_users+moderator:read:followers+channel:moderate+bits:read
-# get code from result url and place into .env AUTH_CODE
-#https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=<CLIENT_ID>&redirect_uri=https://localhost&scope=analytics:read:extensions+analytics:read:games+bits:read+channel:edit:commercial+channel:manage:broadcast+channel:manage:extensions+channel:manage:moderators+channel:manage:polls+channel:manage:predictions+channel:manage:raids+channel:manage:redemptions+channel:manage:schedule+channel:manage:videos+channel:manage:vips+channel:moderate+channel:read:charity+channel:read:editors+channel:read:goals+channel:read:hype_train+channel:read:polls+channel:read:predictions+channel:read:redemptions+channel:read:stream_key+channel:read:subscriptions+channel:read:vips+chat:edit+chat:read+clips:edit+moderation:read+moderator:manage:announcements+moderator:manage:automod+moderator:manage:automod_settings+moderator:manage:banned_users+moderator:manage:blocked_terms+moderator:manage:chat_messages+moderator:manage:chat_settings+moderator:manage:shield_mode+moderator:manage:shoutouts+moderator:read:automod_settings+moderator:read:blocked_terms+moderator:read:chat_settings+moderator:read:chatters+moderator:read:followers+moderator:read:shield_mode+moderator:read:shoutouts+user:edit+user:edit:follows+user:manage:blocked_users+user:manage:chat_color+user:manage:whispers+user:read:blocked_users+user:read:broadcast+user:read:email+user:read:follows+user:read:subscriptions+whispers:edit+whispers:read
+# get code from result url and place into .env BOT_CODE/STREAM_CODE
+# when logged in as bot account place code into BOT_CODE
+# when logged in as stream account place code into STREAM_CODE
 
 
 import asyncio
