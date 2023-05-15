@@ -562,7 +562,7 @@ class TwitchBot(object):
 
     async def eventsub_loop(self):
 
-        async for self._socket in websockets.connect('wss://eventsub-beta.wss.twitch.tv/ws'):
+        async for self._socket in websockets.connect(self.config['EVENTSUB_ADDRESS']):
             try:
                 while True:
 
