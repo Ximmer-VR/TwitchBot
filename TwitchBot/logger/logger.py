@@ -132,11 +132,11 @@ class Logger(object):
 
             msg_entry['time'] = time.time()
 
-            if msg_entry['count'] > 10:
+            if msg_entry['count'] > 3:
                 return
 
             msg_entry['count'] += 1
-            if msg_entry['count'] > 10:
+            if msg_entry['count'] > 3:
                 self.warning('muting log message: {}'.format(msg))
 
         else:
