@@ -30,10 +30,12 @@ class Notification(Gear):
         pass
 
     async def on_follow(self, who: str) -> None:
-        await self.send_message('Thank you for following {}!'.format(who))
+        if self.is_live():
+            await self.send_message('Thank you for following {}!'.format(who))
 
     async def on_subscribe(self, who: str, message: str, emotes) -> None:
-        await self.send_message('Thank you for subscribing {}!'.format(who))
+        if self.is_live():
+            await self.send_message('Thank you for subscribing {}!'.format(who))
 
     async def on_raid(self, who: str, how_many: int) -> None:
         if how_many >= 3:
