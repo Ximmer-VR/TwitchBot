@@ -3,13 +3,13 @@
 __author__ = 'Ximmer'
 __copyright__ = 'Copyright 2023, Ximmer'
 
+import abc
+import asyncio
 import importlib
 import os
 
-from rich import print
-
 import logger
-import abc
+from rich import print
 
 _log = logger.Logger(__name__)
 
@@ -21,6 +21,19 @@ class Gear(metaclass=abc.ABCMeta):
     async def start(self, bot):
         self._bot = bot
         await self.on_start()
+
+    #
+    # Util
+    #
+
+    async def _exception_wrapper(self, functor: asyncio.coroutine):
+        try:
+            await functor
+        except Exception as ex:
+            self._log.exception(ex)
+
+    def create_task(self, functor: asyncio.coroutine):
+        asyncio.create_task(self._exception_wrapper(functor))
 
     #
     # Logging
