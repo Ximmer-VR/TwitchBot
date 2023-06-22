@@ -40,6 +40,12 @@ CREATE TABLE IF NOT EXISTS config (
     value TEXT
 );
 
+CREATE TABLE IF NOT EXISTS commands (
+    id INTEGER PRIMARY KEY,
+    command TEXT,
+    response TEXT
+);
+
 CREATE TABLE IF NOT EXISTS bots (
     id INTEGER PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
