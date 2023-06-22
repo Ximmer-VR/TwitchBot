@@ -66,6 +66,12 @@ class Irc(object):
         self._log.debug(results)
         return results
 
+    async def _exception_wrapper(self, functor: asyncio.coroutine):
+        try:
+            await functor
+        except Exception as ex:
+            self._log.exception(ex)
+
     async def _irc_message(self, message):
 
         ''' Unhandled Twitch Messages
@@ -111,7 +117,7 @@ class Irc(object):
 
                     if nick not in self._users:
                         self._users.append(nick)
-                    asyncio.create_task(self.on_join(nick))
+                    asyncio.create_task(self._exception_wrapper(self.on_join(nick)))
                     return
 
             if command == 'PART':
@@ -123,13 +129,13 @@ class Irc(object):
                 if self.on_message is not None:
                     nick, user, host = self._parse_ident(ident)
                     tags = self._parse_tags(tags)
-                    asyncio.create_task(self.on_message(nick, data, tags))
+                    asyncio.create_task(self._exception_wrapper(self.on_message(nick, data, tags)))
                     return
 
             # welcome message
             if command == '001':
                 if self.on_welcome is not None:
-                    asyncio.create_task(self.on_welcome())
+                    asyncio.create_task(self._exception_wrapper(self.on_welcome()))
                     return
 
             # names list
