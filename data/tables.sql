@@ -51,7 +51,8 @@ CREATE TABLE IF NOT EXISTS bots (
     username TEXT UNIQUE NOT NULL,
     live_in INTEGER,
     last_seen INTEGER,
-    whitelist INTEGER DEFAULT 0 NOT NULL
+    whitelist INTEGER DEFAULT 0 NOT NULL,
+    banned INTEGER DEFAULT 0 NOT NULL
 );
 
 INSERT INTO bots (username, whitelist) VALUES ('streamlabs', 1) ON CONFLICT(username) DO NOTHING;

@@ -147,12 +147,23 @@ class TwitchBot(object):
         return response
 
     # requires moderator:manage:banned_users
-    def api_ban(self, who, reason):
+    async def api_ban(self, who, reason):
+
+        for attempt in range(10):
+            user_id = self.get_userid_from_login(who)
+            if user_id is not None:
+                break
+            self._log.warning('failed to get user_id for {} attempt {}/10'.format(who, attempt + 1))
+            await asyncio.sleep(1)
+
+        if user_id is None:
+            self._log.warning('api_ban: failed to get user id for user {}'.format(who))
+            return False
 
         url = 'https://api.twitch.tv/helix/moderation/bans?broadcaster_id={}&moderator_id={}'.format(self.get_userid_from_login(self.config['STREAM_USER']), self.get_userid_from_login(self.config['BOT_USER']))
         data = {
             'data': {
-                'user_id': self.get_userid_from_login(who),
+                'user_id': user_id,
                 'reason': reason
             }
         }
@@ -161,8 +172,10 @@ class TwitchBot(object):
 
         if 'error' in result:
             self._log.error('error banning {}'.format(who))
+            return False
 
         self._log.debug(result)
+        return True
 
     # requires moderator:manage:banned_users
     def api_timeout(self, who, reason, duration):

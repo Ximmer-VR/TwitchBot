@@ -20,7 +20,7 @@ class BotMurder(Gear):
 
     @staticmethod
     def name():
-        return 'BanBots'
+        return 'Bot Murder'
 
     async def on_start(self) -> None:
         self.create_task(self.update_bots())
@@ -82,8 +82,17 @@ class BotMurder(Gear):
             row = cursor.fetchone()
             if row is not None and row['whitelist'] == 0:
                 self._log.info('banning known bot {}'.format(who))
-                self.ban(who, 'registered bot')
-                await self.send_message('Banning {}. Known bot seen in {} channels.'.format(who, row['live_in']))
+                result = await self.ban(who, 'registered bot')
+
+                if result:
+                    try:
+                        cursor = self.db_cursor()
+                        cursor.executemany('UPDATE bots SET banned=1 WHERE bots.username=?', (who,))
+                        self.db_commit()
+                    except sqlite3.Error as ex:
+                        self.log_exception(ex)
+
+                await self.send_message('Banned {}. Known bot seen in {} channels.'.format(who, row['live_in']))
         except sqlite3.Error as ex:
             self.log_exception(ex)
 
