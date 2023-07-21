@@ -140,6 +140,11 @@ class Irc(object):
 
             # names list
             if command == '353':
+                users = data.split(' ')
+                self._log.info('users in channel')
+                for user in users:
+                    self._log.info('  {}'.format(user))
+                    asyncio.create_task(self._exception_wrapper(self.on_join(user)))
                 return
 
             if command == 'NOTICE':
