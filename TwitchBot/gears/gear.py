@@ -7,8 +7,12 @@ import abc
 import asyncio
 import importlib
 import os
+import random
+import threading
+import wave
 
 import logger
+import pyaudio
 from rich import print
 
 _log = logger.Logger(__name__)
@@ -34,6 +38,59 @@ class Gear(metaclass=abc.ABCMeta):
 
     def create_task(self, functor: asyncio.coroutine):
         asyncio.create_task(self._exception_wrapper(functor))
+
+    #
+    # Audio
+    #
+
+    def play_sound(self, name: str) -> None:
+
+        stripped_name = ''.join(e for e in name if e.isalnum() or e == '_' or e == ' ')
+
+        file_name_dir = os.path.join(os.getcwd(), 'audio/{}/'.format(stripped_name)).replace('\\', '/')
+        file_name_wav = os.path.join(os.getcwd(), 'audio/{}.wav'.format(stripped_name)).replace('\\', '/')
+
+        if os.path.exists(file_name_wav):
+            self.log_info('playing sound {}'.format(file_name_wav))
+            threading.Thread(target=self._play_thread, args=(file_name_wav,), daemon=True).start()
+
+        elif os.path.exists(file_name_dir):
+            files = os.listdir(file_name_dir)
+
+            file_name_wav = os.path.join(file_name_dir, random.choice(files))
+            self.log_info('playing sound {}'.format(file_name_wav))
+            threading.Thread(target=self._play_thread, args=(file_name_wav,), daemon=True).start()
+        else:
+            self.log_error('audio file not found.')
+            self.log_warning(file_name_dir)
+            self.log_warning(file_name_wav)
+
+    def _play_thread(self, filename):
+        #define stream chunk
+        chunk = 1024
+
+        #open a wav format music
+        f = wave.open(filename, 'rb')
+        p = pyaudio.PyAudio()
+
+        stream = p.open(format = p.get_format_from_width(f.getsampwidth()),
+                        channels = f.getnchannels(),
+                        rate = f.getframerate(),
+                        output = True)
+        #read data
+        data = f.readframes(chunk)
+
+        #play stream
+        while data:
+            stream.write(data)
+            data = f.readframes(chunk)
+
+        #stop stream
+        stream.stop_stream()
+        stream.close()
+
+        #close PyAudio
+        p.terminate()
 
     #
     # Logging
@@ -67,8 +124,8 @@ class Gear(metaclass=abc.ABCMeta):
     async def send_message(self, message):
         await self._bot.send_message(message)
 
-    def ban(self, who, reason) -> None:
-        self._bot.api_ban(who, reason)
+    async def ban(self, who, reason) -> None:
+        return await self._bot.api_ban(who, reason)
 
     def timeout(self, who, reason, duration) -> None:
         self._bot.api_timeout(who, reason, duration)
