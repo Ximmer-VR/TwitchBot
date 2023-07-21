@@ -8,9 +8,14 @@ import asyncio
 from . import Gear
 import random
 
+# TODO: config system for notification sounds
+
 class Notification(Gear):
     def __init__(self):
         super().__init__()
+
+        self._subscribers = []
+        self._followers = []
 
     @staticmethod
     def name():
@@ -18,6 +23,8 @@ class Notification(Gear):
 
     async def on_stream_live(self, live: bool) -> None:
         if live:
+            self._subscribers = []
+            self._followers = []
             await self.send_message('Stream is live')
         else:
             await self.send_message('Stream has ended')
@@ -27,15 +34,23 @@ class Notification(Gear):
             await self.send_message('pong with space')
             color = random.choice(['blue', 'green', 'orange', 'purple', 'primary'])
             self.announce('pong {}'.format(color), color)
-        pass
+
+        if self.is_live():
+            self.play_sound('MC_Menu_Cursor2')
 
     async def on_follow(self, who: str) -> None:
         if self.is_live():
-            await self.send_message('Thank you for following {}!'.format(who))
+            if who not in self._followers:
+                self._followers.append(who)
+                self.play_sound('OOT_GoldSkulltula_Token')
+                await self.send_message('Thank you for following {}!'.format(who))
 
     async def on_subscribe(self, who: str, message: str, emotes) -> None:
         if self.is_live():
-            await self.send_message('Thank you for subscribing {}!'.format(who))
+            if who not in self._subscribers:
+                self._subscribers.append(who)
+                self.play_sound('OOT_Fanfare_SmallItem')
+                await self.send_message('Thank you for subscribing {}!'.format(who))
 
     async def on_raid(self, who: str, how_many: int) -> None:
         if how_many >= 3:
