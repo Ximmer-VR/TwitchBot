@@ -43,7 +43,8 @@ CREATE TABLE IF NOT EXISTS config (
 CREATE TABLE IF NOT EXISTS commands (
     id INTEGER PRIMARY KEY,
     command TEXT,
-    response TEXT
+    response TEXT,
+    spam INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS bots (
