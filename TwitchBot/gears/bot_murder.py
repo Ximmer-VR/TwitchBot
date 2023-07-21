@@ -87,7 +87,7 @@ class BotMurder(Gear):
                 if result:
                     try:
                         cursor = self.db_cursor()
-                        cursor.executemany('UPDATE bots SET banned=1 WHERE bots.username=?', (who,))
+                        cursor.execute('UPDATE bots SET banned=1 WHERE bots.username=?', (who,))
                         self.db_commit()
                     except sqlite3.Error as ex:
                         self.log_exception(ex)
