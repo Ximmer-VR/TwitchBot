@@ -47,6 +47,9 @@ class Command(Gear):
         self._spam_count = 0
         self._spam_time = time.time() + 3600  # hour
 
+        if live is False:
+            self._collab = None
+
     async def on_message(self, who: str, message: str, user_level: str, tags) -> None:
 
         self._spam_count += 1
@@ -119,7 +122,7 @@ class Command(Gear):
                     self._collab = ' '.join(args[1:])
                     self.log_debug('collab message set to {}'.format(self._collab))
                     self._collab_count = 0
-                    self._collab_time = 0
+                    self._collab_time = time.time()
 
         if message.startswith('!') and len(message) > 1:
             args = message[1:].strip().split(' ')
@@ -145,6 +148,7 @@ class Command(Gear):
             if (self._collab_count >= 60 or time.time() > self._collab_time) and self._collab is not None:
                 self._collab_count = 0
                 self._collab_time = time.time() + 1800
+                await self.send_message(self._collab)
 
             if self._spam_count >= 60 or time.time() > self._spam_time:
                 self._spam_count = 0
