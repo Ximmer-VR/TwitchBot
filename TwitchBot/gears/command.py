@@ -145,7 +145,7 @@ class Command(Gear):
         # spam
         if self.is_live():
 
-            if (self._collab_count >= 60 or time.time() > self._collab_time) and self._collab is not None:
+            if (self._collab_count > 10 and time.time() > self._collab_time) and self._collab is not None:
                 self._collab_count = 0
                 self._collab_time = time.time() + 1800
                 await self.send_message(self._collab)
