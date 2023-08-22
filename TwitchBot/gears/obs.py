@@ -96,6 +96,11 @@ class Obs(Gear):
             if 'authentication' in d['d']:
                 await self._send_auth(d['d']['authentication']['salt'], d['d']['authentication']['challenge'])
                 return
+            else:
+                self._auth_state = True
+                await self.get_scene_list()
+                return
+
 
         if d['op'] == 2:    # Identified
             self._auth_state = True
