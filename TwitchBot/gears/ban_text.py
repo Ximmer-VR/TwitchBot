@@ -33,12 +33,14 @@ class BanText(Gear):
                 if len(command) != 2:
                     await self.send_message('usage: !bantext <user>')
                     return
-                self.ban_user_phrase(command[1])
+                await self.ban_user_phrase(command[1])
             return
 
         # check for banned message
-        if self.check_phrase_is_banned(message):
-            self.timeout(who, TIMEOUT_REASON, TIMEOUT_TIME_S)
+        score = self.check_phrase_is_banned(message)
+        if score is not False:
+            await self.send_message('Timeout {}. Message considered spam. Spam match: {}%'.format(who, int(score * 1000.0) / 10.0))
+            await self.timeout(who, TIMEOUT_REASON, TIMEOUT_TIME_S)
 
     def add_banned_phrase(self, phrase):
 
@@ -87,10 +89,10 @@ class BanText(Gear):
         self._log.debug('banned phrase match score: {}'.format(match))
 
         if best_match > BAN_PHRASE_PASS_PERCENTAGE / 100.0:
-            return True
+            return best_match
         return False
 
-    def ban_user_phrase(self, who):
+    async def ban_user_phrase(self, who):
 
         self.log_info('banning last phrase from {}'.format(who))
 
@@ -107,7 +109,7 @@ class BanText(Gear):
 
                 self.add_banned_phrase(row['message'])
 
-                self.timeout(who, TIMEOUT_REASON, TIMEOUT_TIME_S)
+                await self.timeout(who, TIMEOUT_REASON, TIMEOUT_TIME_S)
 
         except sqlite3.Error as ex:
             self.log_exception(ex)
