@@ -12,7 +12,7 @@ from . import Gear
 
 #                 S    M    H
 UPDATE_PERIOD_S = 60 * 60 * 24
-BAN_REASON = 'known bot account.'
+BAN_REASON = 'Known bot account.'
 
 class BotMurder(Gear):
     def __init__(self):
@@ -82,7 +82,7 @@ class BotMurder(Gear):
             row = cursor.fetchone()
             if row is not None and row['whitelist'] == 0:
                 self._log.info('banning known bot {}'.format(who))
-                result = await self.ban(who, 'registered bot')
+                result = await self.ban(who, BAN_REASON)
 
                 if result:
                     try:
