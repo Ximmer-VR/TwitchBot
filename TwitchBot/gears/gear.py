@@ -127,8 +127,8 @@ class Gear(metaclass=abc.ABCMeta):
     async def ban(self, who, reason) -> None:
         return await self._bot.api_ban(who, reason)
 
-    def timeout(self, who, reason, duration) -> None:
-        self._bot.api_timeout(who, reason, duration)
+    async def timeout(self, who, reason, duration) -> None:
+        return await self._bot.api_timeout(who, reason, duration)
 
     # colors: blue, green, orange, purple, primary
     def announce(self, message, color = None) -> None:
