@@ -149,7 +149,7 @@ class Irc(object):
 
             if command == 'NOTICE':
                 if data == 'Login authentication failed':
-                    self._log.warning('Failed to login to Twitci IRC')
+                    self._log.warning('Failed to login to twitch IRC')
                     self._log.warning('https://id.twitch.tv/oauth2/authorize?response_type=token&redirect_uri=https://localhost&scope=chat%3Aread+chat%3Aedit&client_id=<CLIENT_ID>')
                 return
 
