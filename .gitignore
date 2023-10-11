@@ -16,6 +16,9 @@ ENV/
 env.bak/
 venv.bak/
 
+# Spotify
+.cache
+
 # Visual Studio Code
 .vscode
 
