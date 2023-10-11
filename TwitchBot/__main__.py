@@ -8,9 +8,15 @@ async def main():
 
     await tb.start()
 
-    while True:
-        await asyncio.sleep(1)
-
+    try:
+        while True:
+            await asyncio.sleep(1)
+    except Exception as ex:
+        print(ex)
 
 if __name__ == '__main__':
-    asyncio.run(main())
+
+    try:
+        asyncio.run(main())
+    except Exception as ex:
+        print(ex)
