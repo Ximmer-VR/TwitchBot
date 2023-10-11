@@ -4,8 +4,8 @@ __author__ = 'Ximmer'
 __copyright__ = 'Copyright 2023, Ximmer'
 
 from . import Gear
-import timer
 import sqlite3
+import asyncio
 
 class Points(Gear):
     def __init__(self):
@@ -16,12 +16,12 @@ class Points(Gear):
         return 'Points'
 
     async def on_start(self) -> None:
-        self._timer = timer.Timer(60)
+        self.create_task(self._run())
 
-    # hand out points to users if stream is live
-    async def on_update(self) -> None:
-        if self.is_live():
-            if self._timer.is_triggered():
+    async def _run(self):
+        while True:
+            await asyncio.sleep(60)
+            if self.is_live():
                 self.add_points_all()
 
     def add_points_all(self):
