@@ -437,64 +437,68 @@ class TwitchBot(object):
 
         self._log.info('subscribing to {}'.format(event_type))
 
-        if event_type == 'channel.raid':
-            data = {
-                "type": event_type,
-                "version":"1",
-                "condition":
-                {
-                    "to_broadcaster_user_id": str(self.get_userid_from_login(self.config['STREAM_USER']))
-                },
-                "transport":
-                {
-                    "method":"websocket",
-                    "session_id": self._session_id
+        for i in range(5):
+
+            if event_type == 'channel.raid':
+                data = {
+                    "type": event_type,
+                    "version":"1",
+                    "condition":
+                    {
+                        "to_broadcaster_user_id": str(self.get_userid_from_login(self.config['STREAM_USER']))
+                    },
+                    "transport":
+                    {
+                        "method":"websocket",
+                        "session_id": self._session_id
+                    }
                 }
-            }
-        elif event_type == 'channel.follow':
-            data = {
-                "type": event_type,
-                "version":"2",
-                "condition":
-                {
-                    "broadcaster_user_id": str(self.get_userid_from_login(self.config['STREAM_USER'])),
-                    "moderator_user_id": str(self.get_userid_from_login(self.config['STREAM_USER']))
-                },
-                "transport":
-                {
-                    "method":"websocket",
-                    "session_id": self._session_id
+            elif event_type == 'channel.follow':
+                data = {
+                    "type": event_type,
+                    "version":"2",
+                    "condition":
+                    {
+                        "broadcaster_user_id": str(self.get_userid_from_login(self.config['STREAM_USER'])),
+                        "moderator_user_id": str(self.get_userid_from_login(self.config['STREAM_USER']))
+                    },
+                    "transport":
+                    {
+                        "method":"websocket",
+                        "session_id": self._session_id
+                    }
                 }
-            }
-        else:
-            data = {
-                "type": event_type,
-                "version":"1",
-                "condition":
-                {
-                    "broadcaster_user_id": str(self.get_userid_from_login(self.config['STREAM_USER']))
-                },
-                "transport":
-                {
-                    "method":"websocket",
-                    "session_id": self._session_id
+            else:
+                data = {
+                    "type": event_type,
+                    "version":"1",
+                    "condition":
+                    {
+                        "broadcaster_user_id": str(self.get_userid_from_login(self.config['STREAM_USER']))
+                    },
+                    "transport":
+                    {
+                        "method":"websocket",
+                        "session_id": self._session_id
+                    }
                 }
-            }
 
 
-        json_data = json.dumps(data)
+            json_data = json.dumps(data)
 
-        self._log.debug('request: {}'.format(json_data))
+            self._log.debug('request: {}'.format(json_data))
 
-        url = 'https://api.twitch.tv/helix/eventsub/subscriptions'
+            url = 'https://api.twitch.tv/helix/eventsub/subscriptions'
 
-        result = self.api_request_post(url, data, token)
+            result = self.api_request_post(url, data, token)
 
-        if self.get_val(result, 'error') is not None:
-            self._log.error('error subscribing to an event')
-            self._log.error('result: {}'.format(result))
-        else:
-            self._log.debug('result: {}'.format(result))
+            if self.get_val(result, 'error') is not None:
+                self._log.error('error subscribing to an event')
+                self._log.error('result: {}'.format(result))
+                await asyncio.sleep(5)
+            else:
+                self._log.debug('result: {}'.format(result))
+                return
 
     async def _on_session_welcome(self, meta, payload):
         self._session_id = payload['session']['id']
