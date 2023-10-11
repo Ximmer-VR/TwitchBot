@@ -103,6 +103,10 @@ class Command(Gear):
 
             return
 
+        if message.startswith('!ping'):
+            await self.send_message('pong')
+
+
         if message.startswith('!list'):
             if user_level in ['mod', 'streamer']:
                 cmds = 'command list: !cmd, !list'
