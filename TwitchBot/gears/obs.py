@@ -20,6 +20,9 @@ class Obs(Gear):
         self._socket = None
         self._auth_state = False
 
+        self._queue = []
+        self._current_task = None
+
     @staticmethod
     def name():
         return 'Obs'
@@ -50,14 +53,24 @@ class Obs(Gear):
 
                         self.log_info('headpat found')
 
-                        self.create_task(self.activate_redeem(sceneName, sceneItemId))
+                        self._queue.append(self.activate_redeem(sceneName, sceneItemId))
+
+    async def on_update(self) -> None:
+
+        if self._current_task != None:
+            if self._current_task.done():
+                self._current_task = None
+
+        if len(self._queue) > 0 and self._current_task is None:
+            cr = self._queue.pop(0)
+            self._current_task = self.create_task(cr)
 
     async def activate_redeem(self, sceneName, sceneItemId):
 
         self.log_info('activate redeem')
 
         await self.set_scene_item_enabled(sceneName, sceneItemId, True)
-        await asyncio.sleep(5)
+        await asyncio.sleep(10)
         await self.set_scene_item_enabled(sceneName, sceneItemId, False)
 
     async def _obs_run(self):
@@ -76,7 +89,7 @@ class Obs(Gear):
                     data = await self._socket.recv()
                     data = json.loads(data)
 
-                    self.log_debug(data)
+                    #self.log_debug(data)
 
                     if self._auth_state is False:
                         await self._handle_auth(data)
@@ -100,7 +113,6 @@ class Obs(Gear):
                 self._auth_state = True
                 await self.get_scene_list()
                 return
-
 
         if d['op'] == 2:    # Identified
             self._auth_state = True
