@@ -13,7 +13,7 @@ import wave
 
 import logger
 import pyaudio
-from rich import print
+from dotenv import dotenv_values
 
 _log = logger.Logger(__name__)
 
@@ -37,7 +37,15 @@ class Gear(metaclass=abc.ABCMeta):
             self._log.exception(ex)
 
     def create_task(self, functor: asyncio.coroutine):
-        asyncio.create_task(self._exception_wrapper(functor))
+        return asyncio.create_task(self._exception_wrapper(functor))
+
+    def config_get(self, key, default=None):
+        config = dotenv_values('.env')
+
+        if key in config:
+            return config[key]
+
+        return default
 
     #
     # Audio
