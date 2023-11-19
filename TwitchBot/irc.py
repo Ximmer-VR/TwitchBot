@@ -87,6 +87,9 @@ class Irc(object):
             WHISPER	Receive	Your bot receives this message from the Twitch IRC server when a user sends a WHISPER message. Read more.
         '''
 
+        #strange unicode character getting sent?
+        message = message.replace('\U000e0000', '')
+
         self._log.debug('< {}'.format(message))
 
         # handle the oddball server messages
