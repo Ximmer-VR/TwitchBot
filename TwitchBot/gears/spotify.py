@@ -162,6 +162,9 @@ class Spotify(Gear):
 
         self._next_update = time.time() + UPDATE_RATE_S
 
+        if not self.is_live():
+            return
+
         item = self._spotify.currently_playing()
 
         if len(self._queue) > 0:
